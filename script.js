@@ -1,17 +1,6 @@
-const prompt = require("prompt-sync")({ sigint: true });
 
 
 
-function printGameBoard(){
-    for (let i = 0; i < 9;i++){
-        if (i !=0 && i % 3 ==0 ) process.stdout.write('\n')
-        if (gameBoard[i])
-            process.stdout.write(` ${gameBoard[i]} `)
-        else
-            process.stdout.write(' * ')
-    }
-    process.stdout.write('\n')
-}
 function validInput(index,gameBoard){
     
     if (gameBoard[index] != ''){
