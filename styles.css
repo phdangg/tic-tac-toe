@@ -1,0 +1,17 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.square-container{
+    display: flex;
+    flex-wrap: wrap;
+    width: 606px;
+    height: 600px;
+    border: 1px solid black;
+}

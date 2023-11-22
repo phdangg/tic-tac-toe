@@ -1,6 +1,6 @@
 const prompt = require("prompt-sync")({ sigint: true });
 
-let gameBoard = ['','','','','','','','','',];
+
 
 function printGameBoard(){
     for (let i = 0; i < 9;i++){
@@ -12,37 +12,15 @@ function printGameBoard(){
     }
     process.stdout.write('\n')
 }
-function validInput(index){
-    if (index < 0 || index > 8) {
-        process.stdout.write("Not valid index, please try again\n")
-        return false;
-    }
+function validInput(index,gameBoard){
+    
     if (gameBoard[index] != ''){
-        process.stdout.write("Already checked!\n");
+        alert("Already checked!\n");
         return false;
     }
     return true;
 }
-function playTurn(player){
-    let ticMark = '';
-    if (player == 1) ticMark = "X";
-    if (player == 2) ticMark = "O";
-    do{
-        var index = prompt("Index: ");
-    }while(!validInput(index-1));
-
-    try {
-        gameBoard[index-1] = ticMark;
-    } catch (error) {
-        console.log(error);
-    }
-}
-function printTheWinner(playerNumber){
-
-    process.stdout.write(`Player ${playerNumber} is the Winner\n`)
-
-}
-function isAnyoneWinning(){
+function isAnyoneWinning(gameBoard){
 
     const winningCombinations = [
         [0, 1, 2],
@@ -58,26 +36,63 @@ function isAnyoneWinning(){
     for (const combination of winningCombinations) {
         const [a, b, c] = combination;
         if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
-            printTheWinner(gameBoard[a]);
+            alert(`Player ${gameBoard[a]} is the Winner\n`);
             return true;
         }
     }
 }
 
-function start(){
-    let countMove = 0;
-    while(true){        
-        if (countMove >= 9){
-            process.stdout.write("Tie!\n")
-            break
-        }
-        let player = countMove % 2 + 1;
-        process.stdout.write(`Player ${player} turn!\n`)
-        playTurn(player);
-        countMove++;
-        printGameBoard();
-        if(isAnyoneWinning())
-            break;   
+function playTurn(index,currPlayer,gameBoard){
+
+    let ticMark = '';
+    if (currPlayer == 1) ticMark = "X";
+    if (currPlayer == 2) ticMark = "O";
+    if(!validInput(index,gameBoard)){ 
+        console.log(currPlayer,gameBoard)
+        return {currPlayer,gameBoard};
+    }
+    
+    currPlayer = currPlayer % 2 + 1;
+    
+    try {
+        gameBoard[index] = ticMark;
+        const classNameOfSquare = ".square-" + index;
+        const square = document.querySelector(classNameOfSquare);
+        square.style.cssText += "display: flex;justify-content: center; align-items: center;";
+        square.style.fontSize = "80px";
+        square.textContent = ticMark;
+        
+        return {currPlayer,gameBoard};
+    } catch (error) {
+        console.log(error);
+    }
+    return {currPlayer,gameBoard};
+}
+
+function drawSquare (){
+    let gameActive = true;
+    let currPlayer = 1;
+    var gameBoard = ['','','','','','','','',''];
+    const boxContainer = document.querySelector(".square-container");
+    boxContainer.textContent = "";
+    for(let i = 0; i < 9;i++){
+        const square = document.createElement('div');
+        square.style.width = '200px';
+        square.style.height = '200px';
+        square.className = "square-" + i;
+        square.style.border = "1px solid black";
+        boxContainer.appendChild(square);
+
+        square.addEventListener('click',()=>{
+            if (!gameActive) return;
+            const index = square.className.split('-')[1];
+            const result = playTurn(index,currPlayer,gameBoard);             
+            currPlayer = result.currPlayer;
+            gameBoard = result.gameBoard;
+            if(isAnyoneWinning(gameBoard)){
+                gameActive = false;
+                return;
+            }                           
+        }); 
     }
 }
-start();
